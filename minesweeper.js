@@ -153,6 +153,7 @@ function revealAllBombs() {
 }
 
 function checkWin() {
+    if (GAMESTATE !== "PLAYING") return;
     for (let y = 0; y < GRID_HEIGHT; ++y) {
         for (let x = 0; x < GRID_WIDTH; ++x) {
             if (GRID[y][x] !== -1) {
@@ -165,41 +166,55 @@ function checkWin() {
     playCheerSound();
 }
 
-function handleClick(eventData) {
+function doClick(x, y, button, shouldCheckWin = false) {
     if (GAMESTATE !== "PLAYING") return;
+    let block = getBlock(x, y);
 
     // Left click
-    if (eventData.button === 0) {
-        if (this.className.includes("unknown")) {
-            let pos = getPos(this);
+    if (button === 0) {
+        if (block.className.includes("unknown")) {
+            let pos = getPos(block);
             if (GRID[pos.y][pos.x] > 0) {
                 revealNonZeroCell(pos.x, pos.y);
                 playDigSound();
-                checkWin();
+                if (shouldCheckWin) checkWin();
             } else if (GRID[pos.y][pos.x] === 0) {
                 revealZeroCell(pos.x, pos.y);
                 playDigSound();
-                checkWin();
+                if (shouldCheckWin) checkWin();
             } else if (GRID[pos.y][pos.x] === -1) {
                 revealAllBombs();
+            }
+        } else if (block.className.includes("revealed") && shouldCheckWin) {
+            let pos = getPos(block);
+            for (let dx = -1; dx <= 1; ++dx) {
+                for (let dy = -1; dy <= 1; ++dy) {
+                    if (dx === 0 && dy === 0) continue;
+                    if (x + dx < 0 || x + dx >= GRID_WIDTH || y + dy < 0 || y + dy >= GRID_HEIGHT) continue;
+                    doClick(x + dx, y + dy, button, false);
+                    checkWin();
+                }
             }
         }
     }
 
     // Right click?
     else {
-        if (this.className.includes("unknown")) {
-            this.className = "cell marked";
-            this.style.backgroundColor = "yellow";
-        } else if (this.className.includes("marked")) {
-            this.className = "cell unknown";
+        if (block.className.includes("unknown")) {
+            block.className = "cell marked";
+            block.style.backgroundColor = "yellow";
+        } else if (block.className.includes("marked")) {
+            block.className = "cell unknown";
             let green = 150 + Math.round(Math.random() * 105);
-            this.style.backgroundColor = `rgba(0,${green},0)`;
+            block.style.backgroundColor = `rgba(0,${green},0)`;
         }
         updateBombCount();
     }
+}
 
-
+function handleClick(eventData) {
+    let pos = getPos(this);
+    doClick(pos.x, pos.y, eventData.button, true);
 }
 
 function populateGrid(width, height) {
