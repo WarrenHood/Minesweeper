@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .noselect {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        .cell {
+            position: absolute;
+            background: "green";
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+            line-height: normal;
+        }
+        
+        .unknown {
+            background-color: green;
+        }
+        
+        .marked {
+            background-color: yellow;
+        }
+        
+        .bomb {
+            background-color: red;
+        }
+        
+        .revealed {
+            background-color: brown;
+        }
+        
+        #settings {
+            width: 15%;
+            height: 100%;
+            background-color: rgb(200, 200, 200);
+            padding: 5px;
+        }
+    </style>
+    <script src="minesweeper.js"></script>
+</head>
+
+<body class="noselect" oncontextmenu="return false;">
+    <center>
+        <h1>Minesweeper by Nullbyte</h1>
+    </center>
+    <div>
+        Game State:
+        <span id="gamestate"></span>
+    </div>
+    <div id="settings">
+        <h3>Settings</h3>
+        <div>
+            Difficulty <input type="range" min="1" max="75" value="10" class="slider" id="difficulty">
+        </div>
+        <div>
+            Grid Size <input type="range" min="3" max="50" value="30" class="slider" id="gridSize">
+        </div>
+        <div>
+            <button onclick="resetGame()">Reset Game</button>
+        </div>
+    </div>
+    <div id="field">
+    </div>
+</body>
+
+</html>
