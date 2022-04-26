@@ -53,7 +53,7 @@ function saveProgress() {
 
 function loadProgress() {
     let progress = localStorage.progress;
-    if (progress !== null && progress.length > 0) {
+    if (progress !== null) {
         try {
             progress = JSON.parse(progress);
             GRID_WIDTH = progress.GRID_WIDTH;
