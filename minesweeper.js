@@ -251,7 +251,7 @@ function doClick(x, y, button, shouldCheckWin = false) {
             } else if (GRID[pos.y][pos.x] === -1) {
                 revealAllBombs();
             }
-        } else if (block.className.includes("revealed") && shouldCheckWin) {
+        } else if (block.className.includes("revealed") && shouldCheckWin && canDoGroupReveal(x, y)) {
             let pos = getPos(block);
             for (let dx = -1; dx <= 1; ++dx) {
                 for (let dy = -1; dy <= 1; ++dy) {
@@ -324,6 +324,18 @@ function countBombs(x, y) {
         }
     }
     return c;
+}
+
+function canDoGroupReveal(x, y) {
+    let c = 0;
+    for (let dx = -1; dx <= 1; ++dx) {
+        for (let dy = -1; dy <= 1; ++dy) {
+            if (dx === 0 && dy === 0) continue;
+            if (x + dx < 0 || x + dx >= GRID_WIDTH || y + dy < 0 || y + dy >= GRID_HEIGHT) continue;
+            if (getBlock(x + dx, y + dy).className.includes("marked")) ++c;
+        }
+    }
+    return c >= GRID[y][x];
 }
 
 function wasValidBomb(x, y) {
