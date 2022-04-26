@@ -1,8 +1,8 @@
 WINDOW_WIDTH = window.innerWidth;
 WINDOW_HEIGHT = window.innerHeight;
 
-PLAY_WIDTH = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.7);
-PLAY_HEIGHT = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.7);
+PLAY_WIDTH = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.9);
+PLAY_HEIGHT = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.9);
 
 OFFSET_X = (WINDOW_WIDTH - PLAY_WIDTH) / 2
 OFFSET_Y = (WINDOW_HEIGHT - PLAY_HEIGHT) / 2
