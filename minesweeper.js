@@ -20,10 +20,76 @@ CHEER_SOUND = null
 var GRID = []
 
 function resetGame() {
+    localStorage.progress = '';
     loadSettings();
     populateGrid(GRID_WIDTH, GRID_HEIGHT);
     updateGameState("PLAYING");
     updateBombCount();
+}
+
+function saveProgress() {
+    let gridClasses = []
+    for (let y = 0; y < GRID_HEIGHT; y++) {
+        let row = [];
+        for (let x = 0; x < GRID_WIDTH; x++) {
+            let block = getBlock(x, y);
+            row.push({
+                style: block.style.cssText,
+                inner: block.innerHTML,
+                className: block.className
+            })
+        }
+        gridClasses.push(row);
+    }
+    let progress = JSON.stringify({
+        GRID,
+        GAMESTATE,
+        gridClasses,
+        GRID_WIDTH,
+        GRID_HEIGHT
+    })
+    localStorage.progress = progress;
+}
+
+function loadProgress() {
+    let progress = localStorage.progress;
+    if (progress !== null && progress.length > 0) {
+        try {
+            progress = JSON.parse(progress);
+            GRID_WIDTH = progress.GRID_WIDTH;
+            GRID_HEIGHT = progress.GRID_HEIGHT;
+            GRID = progress.GRID;
+            let grid = document.getElementById("field");
+            grid.innerHTML = "";
+            let cellSize = Math.min(PLAY_WIDTH / GRID_WIDTH, PLAY_HEIGHT / GRID_HEIGHT);
+
+            for (let y = 0; y < GRID_HEIGHT; ++y) {
+                for (let x = 0; x < GRID_WIDTH; ++x) {
+                    let pos = getTopLeft(x, y, cellSize);
+                    let block = document.createElement("div");
+                    block.id = x + "," + y;
+                    block.className = progress.gridClasses[y][x].className;
+                    block.style.cssText = progress.gridClasses[y][x].style;
+                    block.style.height = cellSize + "px";
+                    block.style.width = cellSize + "px";
+                    block.style.left = pos.x + "px";
+                    block.style.top = pos.y + "px";
+                    block.style.fontSize = cellSize + "px";
+                    block.innerHTML = progress.gridClasses[y][x].inner;
+                    block.onmousedown = handleClick;
+                    grid.appendChild(block);
+                }
+            }
+
+            updateGameState(progress.GAMESTATE);
+            updateBombCount();
+            return true;
+        } catch (err) {
+            localStorage.progress = '';
+            console.log("Error loading save progress... Resetting... Error: " + err);
+            return false;
+        }
+    } else return false;
 }
 
 function playDigSound() {
@@ -215,6 +281,7 @@ function doClick(x, y, button, shouldCheckWin = false) {
 function handleClick(eventData) {
     let pos = getPos(this);
     doClick(pos.x, pos.y, eventData.button, true);
+    saveProgress();
 }
 
 function populateGrid(width, height) {
@@ -297,5 +364,7 @@ window.onload = function() {
     SHOVEL_SOUND = document.getElementById("dig");
     EXPLODE_SOUND = document.getElementById("explode");
     CHEER_SOUND = document.getElementById("cheer");
-    resetGame();
+    if (!loadProgress()) {
+        resetGame();
+    }
 }
