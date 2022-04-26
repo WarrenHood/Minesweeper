@@ -43,6 +43,14 @@
             background-color: rgb(200, 200, 200);
             padding: 5px;
         }
+        
+        #bombcounter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24pt;
+            color: red;
+        }
     </style>
     <script src="minesweeper.js"></script>
 </head>
@@ -63,6 +71,9 @@
     <div>
         Game State:
         <span id="gamestate"></span>
+    </div>
+    <div id="bombcounter">
+        Bombs: <span id="bombcount"></span>
     </div>
     <div id="settings">
         <h3>Settings</h3>

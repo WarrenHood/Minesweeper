@@ -1,8 +1,8 @@
 WINDOW_WIDTH = window.innerWidth;
 WINDOW_HEIGHT = window.innerHeight;
 
-PLAY_WIDTH = 800
-PLAY_HEIGHT = 800
+PLAY_WIDTH = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.7);
+PLAY_HEIGHT = Math.floor(Math.min(WINDOW_WIDTH, WINDOW_HEIGHT) * 0.7);
 
 OFFSET_X = (WINDOW_WIDTH - PLAY_WIDTH) / 2
 OFFSET_Y = (WINDOW_HEIGHT - PLAY_HEIGHT) / 2
@@ -23,6 +23,7 @@ function resetGame() {
     loadSettings();
     populateGrid(GRID_WIDTH, GRID_HEIGHT);
     updateGameState("PLAYING");
+    updateBombCount();
 }
 
 function playDigSound() {
@@ -48,6 +49,19 @@ function playCheerSound() {
 function updateGameState(newState) {
     GAMESTATE = newState;
     document.getElementById("gamestate").innerHTML = GAMESTATE;
+}
+
+function updateBombCount() {
+    let c = 0;
+    for (let y = 0; y < GRID_HEIGHT; ++y) {
+        for (let x = 0; x < GRID_WIDTH; ++x) {
+            let block = getBlock(x, y);
+            if (block.className.includes("marked")) c--;
+            if (GRID[y][x] === -1) c++;
+        }
+    }
+
+    document.getElementById("bombcount").innerHTML = c;
 }
 
 function loadSettings() {
@@ -147,7 +161,7 @@ function checkWin() {
             }
         }
     }
-    updateGameState("YOU WIN!")
+    updateGameState("YOU WIN!");
     playCheerSound();
 }
 
@@ -182,6 +196,7 @@ function handleClick(eventData) {
             let green = 150 + Math.round(Math.random() * 105);
             this.style.backgroundColor = `rgba(0,${green},0)`;
         }
+        updateBombCount();
     }
 
 
@@ -229,6 +244,16 @@ function countBombs(x, y) {
     return c;
 }
 
+function wasValidBomb(x, y) {
+    for (let dx = -1; dx <= 1; ++dx) {
+        for (let dy = -1; dy <= 1; ++dy) {
+            if (x + dx < 0 || x + dx >= GRID_WIDTH || y + dy < 0 || y + dy >= GRID_HEIGHT) continue;
+            if (countBombs(x + dx, y + dy) === 8) return false;
+        }
+    }
+    return true;
+}
+
 function placeBombs(width, height) {
     let bombs = Math.round(GRID_WIDTH * GRID_HEIGHT * BOMB_FRAC);
     while (bombs > 0) {
@@ -237,6 +262,10 @@ function placeBombs(width, height) {
         if (GRID[y][x] === null) {
             bombs--;
             GRID[y][x] = -1;
+            if (!wasValidBomb(x, y)) {
+                bombs++;
+                GRID[y][x] = null;
+            }
         }
     }
 
