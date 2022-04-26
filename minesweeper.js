@@ -13,6 +13,9 @@ GRID_HEIGHT = 30
 BOMB_FRAC = 0.2
 
 GAMESTATE = "PLAYING"
+SHOVEL_SOUND = null
+EXPLODE_SOUND = null
+CHEER_SOUND = null
 
 var GRID = []
 
@@ -20,6 +23,26 @@ function resetGame() {
     loadSettings();
     populateGrid(GRID_WIDTH, GRID_HEIGHT);
     updateGameState("PLAYING");
+}
+
+function playDigSound() {
+    if (SHOVEL_SOUND === null) return;
+    if (SHOVEL_SOUND.paused) {
+        SHOVEL_SOUND.play();
+    } else {
+        SHOVEL_SOUND.currentTime = 0;
+    }
+
+}
+
+function playExplodeSound() {
+    if (EXPLODE_SOUND === null) return;
+    EXPLODE_SOUND.play();
+}
+
+function playCheerSound() {
+    if (CHEER_SOUND === null) return;
+    CHEER_SOUND.play();
 }
 
 function updateGameState(newState) {
@@ -112,6 +135,7 @@ function revealAllBombs() {
             }
         }
     }
+    playExplodeSound();
 }
 
 function checkWin() {
@@ -124,6 +148,7 @@ function checkWin() {
         }
     }
     updateGameState("YOU WIN!")
+    playCheerSound();
 }
 
 function handleClick(eventData) {
@@ -135,9 +160,11 @@ function handleClick(eventData) {
             let pos = getPos(this);
             if (GRID[pos.y][pos.x] > 0) {
                 revealNonZeroCell(pos.x, pos.y);
+                playDigSound();
                 checkWin();
             } else if (GRID[pos.y][pos.x] === 0) {
                 revealZeroCell(pos.x, pos.y);
+                playDigSound();
                 checkWin();
             } else if (GRID[pos.y][pos.x] === -1) {
                 revealAllBombs();
@@ -223,5 +250,8 @@ function placeBombs(width, height) {
 }
 
 window.onload = function() {
+    SHOVEL_SOUND = document.getElementById("dig");
+    EXPLODE_SOUND = document.getElementById("explode");
+    CHEER_SOUND = document.getElementById("cheer");
     resetGame();
 }
