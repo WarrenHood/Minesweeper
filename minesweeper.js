@@ -211,7 +211,7 @@ function revealAllBombs() {
                 let block = getBlock(x, y);
                 block.className = "cell bomb";
                 block.style.backgroundColor = "red";
-                block.style.innerHTML = "";
+                block.innerHTML = "";
             }
         }
     }
