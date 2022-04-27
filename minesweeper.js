@@ -349,7 +349,7 @@ function wasValidBomb(x, y) {
 }
 
 function placeBombs(width, height) {
-    let bombs = Math.round(GRID_WIDTH * GRID_HEIGHT * BOMB_FRAC);
+    let bombs = Math.ceil(GRID_WIDTH * GRID_HEIGHT * BOMB_FRAC);
     while (bombs > 0) {
         let x = Math.round(Math.random() * (GRID_WIDTH - 1));
         let y = Math.round(Math.random() * (GRID_HEIGHT - 1));
