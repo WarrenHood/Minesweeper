@@ -376,6 +376,8 @@ window.onload = function() {
     SHOVEL_SOUND = document.getElementById("dig");
     EXPLODE_SOUND = document.getElementById("explode");
     CHEER_SOUND = document.getElementById("cheer");
+    document.getElementById('difficulty').onclick = resetGame;
+    document.getElementById('gridSize').onclick = resetGame;
     if (!loadProgress()) {
         resetGame();
     }
